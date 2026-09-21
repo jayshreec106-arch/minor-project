@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SentinelAudit — AI Multi-Vendor Network Security Compliance Auditor</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ============ TOP NAVBAR ============ -->
+<header class="topbar">
+  <div class="topbar-left">
+    <button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+      <span></span><span></span><span></span>
+    </button>
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">SentinelAudit</span>
+      <span class="brand-tag">Multi-Vendor Compliance Engine</span>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="scan-indicator">
+      <span class="pulse-dot"></span>
+      <span>Live monitoring</span>
+    </div>
+    <div class="topbar-divider"></div>
+    <div class="user-chip">
+      <div class="avatar">AN</div>
+      <div class="user-meta">
+        <span class="user-name">Admin</span>
+        <span class="user-role">Security Analyst</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- ============ SIDEBAR ============ -->
+  <nav class="sidebar" id="sidebar">
+    <ul class="nav-list">
+      <li><button class="nav-link active" data-page="dashboard"><span class="nav-icon">▣</span>Dashboard</button></li>
+      <li><button class="nav-link" data-page="devices"><span class="nav-icon">▤</span>Devices</button></li>
+      <li><button class="nav-link" data-page="audit"><span class="nav-icon">⟡</span>Configuration Audit</button></li>
+      <li><button class="nav-link" data-page="findings"><span class="nav-icon">⚠</span>Security Findings</button></li>
+      <li><button class="nav-link" data-page="simulation"><span class="nav-icon">◈</span>Network Simulation</button></li>
+      <li><button class="nav-link" data-page="compliance"><span class="nav-icon">✓</span>Compliance</button></li>
+      <li><button class="nav-link" data-page="assistant"><span class="nav-icon">✦</span>AI Assistant</button></li>
+    </ul>
+    <div class="sidebar-foot">
+      <div class="sidebar-foot-label">Prototype build</div>
+      <div class="sidebar-foot-version">v0.1 — offline demo</div>
+    </div>
+  </nav>
+
+  <!-- ============ MAIN CONTENT ============ -->
+  <main class="content">
+
+    <!-- ================= DASHBOARD ================= -->
+    <section class="page active" id="page-dashboard">
+      <div class="page-head">
+        <h1>Dashboard</h1>
+        <p>Fleet-wide compliance posture across all connected vendors</p>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat-card">
+          <span class="stat-label">Total Devices</span>
+          <span class="stat-value" data-counter="12">0</span>
+          <span class="stat-sub">Cisco · Juniper · Fortinet</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Devices Audited</span>
+          <span class="stat-value" data-counter="10">0</span>
+          <span class="stat-sub">2 pending scan</span>
+        </div>
+        <div class="stat-card accent-blue">
+          <span class="stat-label">Compliance Score</span>
+          <span class="stat-value" data-counter="78" data-suffix="%">0%</span>
+          <div class="mini-bar"><div class="mini-bar-fill" style="width:78%"></div></div>
+        </div>
+        <div class="stat-card accent-red">
+          <span class="stat-label">Critical Issues</span>
+          <span class="stat-value" data-counter="3">0</span>
+          <span class="stat-sub">Requires immediate action</span>
+        </div>
+      </div>
+
+      <div class="dash-row">
+        <div class="panel severity-panel">
+          <div class="panel-head"><h2>Issue Severity Breakdown</h2></div>
+          <div class="sev-bars">
+            <div class="sev-row">
+              <span class="sev-label"><span class="dot dot-critical"></span>Critical</span>
+              <div class="sev-track"><div class="sev-fill fill-critical" style="width:18%"></div></div>
+              <span class="sev-num">3</span>
+            </div>
+            <div class="sev-row">
+              <span class="sev-label"><span class="dot dot-high"></span>High</span>
+              <div class="sev-track"><div class="sev-fill fill-high" style="width:35%"></div></div>
+              <span class="sev-num">6</span>
+            </div>
+            <div class="sev-row">
+              <span class="sev-label"><span class="dot dot-medium"></span>Medium</span>
+              <div class="sev-track"><div class="sev-fill fill-medium" style="width:47%"></div></div>
+              <span class="sev-num">8</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel vendor-panel">
+          <div class="panel-head"><h2>Vendor Distribution</h2></div>
+          <div class="vendor-list">
+            <div class="vendor-row">
+              <span class="vendor-name">Cisco</span>
+              <div class="vendor-track"><div class="vendor-fill" style="width:50%;background:#3b82f6"></div></div>
+              <span class="vendor-count">6</span>
+            </div>
+            <div class="vendor-row">
+              <span class="vendor-name">Fortinet</span>
+              <div class="vendor-track"><div class="vendor-fill" style="width:25%;background:#f97316"></div></div>
+              <span class="vendor-count">3</span>
+            </div>
+            <div class="vendor-row">
+              <span class="vendor-name">Juniper</span>
+              <div class="vendor-track"><div class="vendor-fill" style="width:25%;background:#22c55e"></div></div>
+              <span class="vendor-count">3</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-head"><h2>Recent Activity</h2></div>
+        <ul class="activity-list">
+          <li><span class="dot dot-critical"></span> Any-to-Any firewall rule flagged on <strong>Branch-FW</strong> <span class="activity-time">4 min ago</span></li>
+          <li><span class="dot dot-high"></span> Telnet service detected on <strong>Branch-Router</strong> <span class="activity-time">22 min ago</span></li>
+          <li><span class="dot dot-medium"></span> Logging disabled on <strong>Core-Router</strong> <span class="activity-time">1 hr ago</span></li>
+          <li><span class="dot dot-secure"></span> Audit completed for <strong>Core-Router</strong> — score 91% <span class="activity-time">2 hr ago</span></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- ================= DEVICES ================= -->
+    <section class="page" id="page-devices">
+      <div class="page-head">
+        <h1>Devices</h1>
+        <p>Inventory of monitored network hardware across vendors</p>
+      </div>
+
+      <div class="panel">
+        <div class="table-wrap">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Device</th><th>Vendor</th><th>Type</th><th>Status</th><th>Security Score</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="dev-name">Core-Router</td>
+                <td>Cisco</td>
+                <td>Router</td>
+                <td><span class="badge badge-secure">Secure</span></td>
+                <td><div class="score-cell"><div class="score-track"><div class="score-fill fill-secure" style="width:91%"></div></div><span>91%</span></div></td>
+              </tr>
+              <tr>
+                <td class="dev-name">Branch-FW</td>
+                <td>Fortinet</td>
+                <td>Firewall</td>
+                <td><span class="badge badge-warning">Warning</span></td>
+                <td><div class="score-cell"><div class="score-track"><div class="score-fill fill-warning" style="width:67%"></div></div><span>67%</span></div></td>
+              </tr>
+              <tr>
+                <td class="dev-name">Branch-Router</td>
+                <td>Juniper</td>
+                <td>Router</td>
+                <td><span class="badge badge-critical">Critical</span></td>
+                <td><div class="score-cell"><div class="score-track"><div class="score-fill fill-critical" style="width:54%"></div></div><span>54%</span></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONFIGURATION AUDIT ================= -->
+    <section class="page" id="page-audit">
+      <div class="page-head">
+        <h1>Configuration Audit</h1>
+        <p>Upload a device configuration export and run a simulated compliance scan</p>
+      </div>
+
+      <div class="panel">
+        <div class="upload-zone" id="uploadZone">
+          <div class="upload-icon">⇪</div>
+          <p class="upload-title">Drop a config file here, or click to browse</p>
+          <p class="upload-sub">Accepted formats: .txt, .conf</p>
+          <input type="file" id="fileInput" accept=".txt,.conf" hidden>
+          <span class="file-chip" id="fileChip" hidden></span>
+        </div>
+        <button class="btn btn-primary" id="runAuditBtn">Run Security Audit</button>
+      </div>
+
+      <div class="panel" id="auditResults" hidden>
+        <div class="panel-head"><h2>Audit Results</h2></div>
+        <div class="audit-grid">
+          <div class="audit-item"><span class="audit-label">Vendor Detected</span><span class="audit-value" id="resVendor">—</span></div>
+          <div class="audit-item"><span class="audit-label">Checks Run</span><span class="audit-value" id="resChecks">—</span></div>
+          <div class="audit-item good"><span class="audit-label">Passed</span><span class="audit-value" id="resPassed">—</span></div>
+          <div class="audit-item bad"><span class="audit-label">Failed</span><span class="audit-value" id="resFailed">—</span></div>
+          <div class="audit-item"><span class="audit-label">Security Score</span><span class="audit-value" id="resScore">—</span></div>
+          <div class="audit-item"><span class="audit-label">Risk Level</span><span class="audit-value" id="resRisk">—</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= SECURITY FINDINGS ================= -->
+    <section class="page" id="page-findings">
+      <div class="page-head">
+        <h1>Security Findings</h1>
+        <p>Issues discovered across the last audit cycle</p>
+      </div>
+
+      <div class="filter-row">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="critical">Critical</button>
+        <button class="filter-chip" data-filter="high">High</button>
+        <button class="filter-chip" data-filter="medium">Medium</button>
+        <button class="filter-chip" data-filter="low">Low</button>
+      </div>
+
+      <div class="findings-list" id="findingsList">
+
+        <div class="finding-card" data-severity="critical">
+          <div class="finding-head">
+            <span class="badge badge-critical">Critical</span>
+            <h3>Any-to-Any Firewall Rule</h3>
+          </div>
+          <p class="finding-desc">A firewall policy permits traffic from any source to any destination on any port, effectively disabling perimeter filtering.</p>
+          <div class="finding-meta">
+            <span><strong>Device:</strong> Branch-FW</span>
+            <span><strong>Remediation:</strong> Restrict the rule to specific source/destination subnets and required services only.</span>
+          </div>
+        </div>
+
+        <div class="finding-card" data-severity="high">
+          <div class="finding-head">
+            <span class="badge badge-high">High</span>
+            <h3>Telnet Enabled</h3>
+          </div>
+          <p class="finding-desc">Telnet management access is active, transmitting credentials and session data in plaintext.</p>
+          <div class="finding-meta">
+            <span><strong>Device:</strong> Branch-Router</span>
+            <span><strong>Remediation:</strong> Disable Telnet and enforce SSHv2 for all remote management sessions.</span>
+          </div>
+        </div>
+
+        <div class="finding-card" data-severity="medium">
+          <div class="finding-head">
+            <span class="badge badge-medium">Medium</span>
+            <h3>Logging Disabled</h3>
+          </div>
+          <p class="finding-desc">System event logging is turned off, limiting visibility into configuration changes and access attempts.</p>
+          <div class="finding-meta">
+            <span><strong>Device:</strong> Core-Router</span>
+            <span><strong>Remediation:</strong> Enable centralized logging and forward events to a syslog server.</span>
+          </div>
+        </div>
+
+        <div class="finding-card" data-severity="low">
+          <div class="finding-head">
+            <span class="badge badge-low">Low</span>
+            <h3>NTP Not Configured</h3>
+          </div>
+          <p class="finding-desc">No NTP server is configured, which can cause clock drift and inaccurate log timestamps.</p>
+          <div class="finding-meta">
+            <span><strong>Device:</strong> Branch-Router</span>
+            <span><strong>Remediation:</strong> Configure at least two NTP servers for reliable time synchronization.</span>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= NETWORK SIMULATION ================= -->
+    <section class="page" id="page-simulation">
+      <div class="page-head">
+        <h1>Network Simulation</h1>
+        <p>Visualize topology and simulate security events across the network</p>
+      </div>
+
+      <div class="panel">
+        <div class="topology" id="topology">
+          <div class="topo-node" data-node="internet"><span class="topo-icon">☁</span><span>Internet</span></div>
+          <div class="topo-link"></div>
+          <div class="topo-node" data-node="firewall"><span class="topo-icon">▣</span><span>Fortinet Firewall</span></div>
+          <div class="topo-link"></div>
+          <div class="topo-node" data-node="core-router"><span class="topo-icon">◆</span><span>Cisco Core Router</span></div>
+          <div class="topo-link"></div>
+          <div class="topo-node" data-node="switch"><span class="topo-icon">▦</span><span>Cisco Switch</span></div>
+          <div class="topo-link"></div>
+          <div class="topo-node" data-node="branch-router"><span class="topo-icon">◆</span><span>Juniper Branch Router</span></div>
+          <div class="topo-link"></div>
+          <div class="topo-node" data-node="server"><span class="topo-icon">▥</span><span>Server</span></div>
+        </div>
+
+        <div class="sim-controls">
+          <button class="btn btn-outline" id="btnStart">Start Simulation</button>
+          <button class="btn btn-danger" id="btnIssue">Create Security Issue</button>
+          <button class="btn btn-warning" id="btnDrift">Detect Configuration Drift</button>
+          <button class="btn btn-ghost" id="btnReset">Reset Simulation</button>
+        </div>
+
+        <div class="sim-log" id="simLog">
+          <div class="sim-log-line">Simulation idle. Press "Start Simulation" to begin.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= COMPLIANCE ================= -->
+    <section class="page" id="page-compliance">
+      <div class="page-head">
+        <h1>Compliance</h1>
+        <p>Category-level compliance posture based on the latest audit</p>
+      </div>
+
+      <div class="panel">
+        <div class="compliance-list">
+          <div class="compliance-row">
+            <span class="compliance-name">Authentication</span>
+            <div class="compliance-track"><div class="compliance-fill" style="width:82%"></div></div>
+            <span class="compliance-pct">82%</span>
+          </div>
+          <div class="compliance-row">
+            <span class="compliance-name">Access Control</span>
+            <div class="compliance-track"><div class="compliance-fill" style="width:70%"></div></div>
+            <span class="compliance-pct">70%</span>
+          </div>
+          <div class="compliance-row">
+            <span class="compliance-name">Logging</span>
+            <div class="compliance-track"><div class="compliance-fill warn" style="width:58%"></div></div>
+            <span class="compliance-pct">58%</span>
+          </div>
+          <div class="compliance-row">
+            <span class="compliance-name">Network Security</span>
+            <div class="compliance-track"><div class="compliance-fill crit" style="width:49%"></div></div>
+            <span class="compliance-pct">49%</span>
+          </div>
+          <div class="compliance-row">
+            <span class="compliance-name">Monitoring</span>
+            <div class="compliance-track"><div class="compliance-fill" style="width:75%"></div></div>
+            <span class="compliance-pct">75%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= AI ASSISTANT ================= -->
+    <section class="page" id="page-assistant">
+      <div class="page-head">
+        <h1>AI Security Assistant</h1>
+        <p>Ask about findings, devices, or remediation steps (simulated responses)</p>
+      </div>
+
+      <div class="panel chat-panel">
+        <div class="chat-window" id="chatWindow">
+          <div class="chat-msg chat-bot">
+            <div class="chat-avatar">✦</div>
+            <div class="chat-bubble">Hi, I'm the SentinelAudit assistant. Ask me about a device, a finding, or how to fix an issue.</div>
+          </div>
+        </div>
+        <div class="chat-suggestions">
+          <button class="chip-btn" data-q="Why is my firewall insecure?">Why is my firewall insecure?</button>
+          <button class="chip-btn" data-q="How do I fix telnet?">How do I fix telnet?</button>
+          <button class="chip-btn" data-q="What is my compliance score?">What is my compliance score?</button>
+        </div>
+        <form class="chat-input-row" id="chatForm">
+          <input type="text" id="chatInput" placeholder="Ask the AI assistant..." autocomplete="off">
+          <button type="submit" class="btn btn-primary">Send</button>
+        </form>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
