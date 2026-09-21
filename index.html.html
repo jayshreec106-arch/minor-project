@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carbon-Aware Logistics Digital Twin - Dual View Prototype</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            brand: {
+              50: '#f0fdf4',
+              100: '#dcfce7',
+              500: '#22c55e',
+              600: '#16a34a',
+              700: '#15803d',
+              900: '#14532d',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    .phone-mockup {
+      border: 12px solid #1f2937;
+      border-radius: 36px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+    }
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 6px;
+    }
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background-color: rgba(156, 163, 175, 0.4);
+      border-radius: 3px;
+    }
+  </style>
+</head>
+<body class="bg-slate-100 dark:bg-slate-950 text-slate-800 dark:text-slate-100 min-h-screen transition-colors duration-300 font-sans">
+
+  <!-- TOP GLOBAL HEADER -->
+  <header class="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50 px-6 py-3 flex items-center justify-between shadow-sm">
+    <div class="flex items-center space-x-3">
+      <div class="p-2 bg-green-500/10 rounded-lg text-green-500 font-bold text-xl">
+        <i class="fa-solid fa-leaf"></i>
+      </div>
+      <div>
+        <h1 class="font-bold text-lg leading-none">Carbon-Aware Logistics Digital Twin</h1>
+        <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">Interactive Demo • Owner Web Dashboard & Driver App</p>
+      </div>
+    </div>
+
+    <div class="flex items-center space-x-4">
+      <button id="themeToggle" class="px-4 py-2 bg-slate-200 dark:bg-slate-800 rounded-full text-xs font-semibold hover:bg-slate-300 dark:hover:bg-slate-700 transition flex items-center space-x-2">
+        <i id="themeIcon" class="fa-solid fa-sun text-amber-500"></i>
+        <span id="themeLabel">Light Mode</span>
+      </button>
+
+      <span class="px-3 py-1 bg-green-500/10 text-green-600 dark:text-green-400 border border-green-500/20 rounded-full text-xs font-medium flex items-center">
+        <span class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></span> Twin Synced Live
+      </span>
+    </div>
+  </header>
+
+  <!-- MAIN DUAL CONTAINER -->
+  <main class="max-w-7xl mx-auto p-4 md:p-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+    <!-- LEFT PORTAL: FLEET OWNER DASHBOARD (7 COLS) -->
+    <section class="lg:col-span-7 flex flex-col space-y-6">
+      
+      <!-- OWNER HEADER CARD -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <span class="text-xs uppercase tracking-wider font-semibold text-green-600 dark:text-green-400">Fleet Owner Control Center</span>
+            <h2 class="text-xl font-bold">National Logistics Operations</h2>
+          </div>
+          <div class="flex space-x-2">
+            <button onclick="runOwnerSimulation()" class="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs font-medium transition flex items-center space-x-1">
+              <i class="fa-solid fa-wand-magic-sparkles"></i>
+              <span>Simulate Green Reroute</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- KPI CARDS -->
+        <div class="grid grid-cols-3 gap-3">
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Active Fleet</p>
+            <p class="text-lg font-bold mt-1 text-slate-900 dark:text-slate-100">12 / 14 Vehicles</p>
+            <p class="text-[10px] text-green-600 dark:text-green-400 font-medium mt-1">4 EV • 8 Diesel</p>
+          </div>
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Avg Fleet Carbon</p>
+            <p id="ownerCarbonKpi" class="text-lg font-bold mt-1 text-green-600 dark:text-green-400">142 g/km</p>
+            <p class="text-[10px] text-green-600 dark:text-green-400 font-medium mt-1">↓ 18% vs baseline</p>
+          </div>
+          <div class="p-3 bg-slate-50 dark:bg-slate-800/50 rounded-xl border border-slate-100 dark:border-slate-800">
+            <p class="text-xs text-slate-500 dark:text-slate-400">Cost Savings</p>
+            <p id="ownerCostKpi" class="text-lg font-bold mt-1 text-emerald-600 dark:text-emerald-400">₹42,500</p>
+            <p class="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium mt-1">This month</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- MAP & ANALYTICS -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-5 shadow-sm space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="font-bold text-sm flex items-center">
+            <i class="fa-solid fa-map-location-dot text-green-500 mr-2"></i> Live Fleet Digital Twin Map
+          </h3>
+          <span class="text-xs text-slate-500">Route: Delhi ➔ Jaipur (NH-48)</span>
+        </div>
+
+        <!-- SIMULATED ROUTE MAP GRAPHIC -->
+        <div class="relative w-full h-48 bg-slate-100 dark:bg-slate-800/70 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-700/50 p-4 flex flex-col justify-between">
+          <div class="flex justify-between items-start z-10">
+            <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2.5 py-1 rounded-md text-xs font-semibold shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-green-500 inline-block mr-1"></span> Delhi Hub
+            </div>
+            <div class="bg-white/90 dark:bg-slate-900/90 backdrop-blur px-2.5 py-1 rounded-md text-xs font-semibold shadow-sm">
+              <span class="w-2 h-2 rounded-full bg-blue-500 inline-block mr-1"></span> Jaipur Depot
+            </div>
+          </div>
+
+          <!-- ROUTE PATH LINES -->
+          <div class="absolute inset-0 flex items-center justify-center px-10 pointer-events-none">
+            <!-- Congested Route -->
+            <div class="w-full h-1 bg-red-400/40 relative rounded-full">
+              <span class="absolute -top-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-red-500 bg-red-100 dark:bg-red-950/80 px-2 py-0.5 rounded-full border border-red-300 dark:border-red-800">
+                ⚠️ Congestion & Rain (Main Highway)
+              </span>
+            </div>
+            <!-- Green Route -->
+            <div class="w-full h-1 bg-green-500 relative rounded-full border-t border-dashed border-green-300 dark:border-green-700 -mt-8">
+              <span class="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[10px] font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-950/80 px-2 py-0.5 rounded-full border border-green-300 dark:border-green-800">
+                🌱 Active Green Bypass (NH-48)
+              </span>
+            </div>
+          </div>
+
+          <div class="flex justify-between items-end z-10">
+            <div class="text-[11px] text-slate-500 bg-white/80 dark:bg-slate-900/80 px-2 py-1 rounded border border-slate-200 dark:border-slate-700">
+              TRK-102 Position: <span class="font-bold text-slate-800 dark:text-slate-200">Gurgaon Toll Gate</span>
+            </div>
+            <div class="text-[11px] text-green-600 dark:text-green-400 font-bold bg-green-500/10 px-2 py-1 rounded border border-green-500/20">
+              Estimated Emission Saved: 24.5 kg CO₂
+            </div>
+          </div>
+        </div>
+
+        <!-- EMISSION CHART -->
+        <div>
+          <h4 class="text-xs font-semibold text-slate-500 dark:text-slate-400 mb-2">Fleet Emissions Comparison (kg CO₂)</h4>
+          <div class="h-32">
+            <canvas id="emissionsChart"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <!-- OWNER AI COPILOT CHAT -->
+      <div class="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col h-64">
+        <div class="flex items-center space-x-2 pb-3 border-b border-slate-100 dark:border-slate-800">
+          <div class="p-1.5 bg-green-500/10 text-green-500 rounded-lg text-sm">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm">Fleet Owner AI Copilot</h3>
+            <p class="text-[10px] text-slate-400">Ask about ESG compliance, eco-routes, or cost savings</p>
+          </div>
+        </div>
+
+        <div id="ownerChatHistory" class="flex-1 overflow-y-auto custom-scrollbar my-3 space-y-3 pr-2 text-xs">
+          <div class="bg-slate-100 dark:bg-slate-800/80 p-2.5 rounded-xl text-slate-700 dark:text-slate-300 max-w-[85%]">
+            Hello Operations Manager! I'm monitoring your 12 active vehicles. TRK-102 is currently encountering heavy rain and congestion on the primary route. I have recommended a green bypass.
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <input id="ownerChatInput" type="text" placeholder="e.g., Which truck has highest carbon output?" class="flex-1 bg-slate-100 dark:bg-slate-800 border-0 rounded-lg text-xs px-3 py-2 focus:ring-2 focus:ring-green-500 outline-none" onkeypress="if(event.key==='Enter') sendOwnerMessage()" />
+          <button onclick="sendOwnerMessage()" class="p-2 bg-green-600 hover:bg-green-700 text-white rounded-lg text-xs transition">
+            <i class="fa-solid fa-paper-plane"></i>
+          </button>
+        </div>
+      </div>
+
+    </section>
+
+
+    <!-- RIGHT PORTAL: TRUCK DRIVER MOBILE APP (5 COLS) -->
+    <section class="lg:col-span-5 flex justify-center">
+      
+      <!-- PHONE MOCKUP -->
+      <div class="phone-mockup w-full max-w-[380px] bg-slate-900 text-slate-100 rounded-[36px] overflow-hidden flex flex-col h-[740px] relative border-4 border-slate-800">
+        
+        <!-- PHONE TOP BAR -->
+        <div class="bg-slate-950 px-5 py-2 flex justify-between items-center text-[11px] text-slate-400 font-mono select-none">
+          <span>09:41 AM</span>
+          <div class="w-16 h-3 bg-slate-800 rounded-full mx-auto"></div>
+          <div class="flex space-x-1.5 items-center">
+            <i class="fa-solid fa-wifi text-[10px]"></i>
+            <i class="fa-solid fa-battery-three-quarters text-[10px]"></i>
+          </div>
+        </div>
+
+        <!-- DRIVER APP HEADER -->
+        <div class="bg-slate-900 p-4 border-b border-slate-800 flex items-center justify-between">
+          <div class="flex items-center space-x-3">
+            <div class="relative">
+              <div class="w-10 h-10 rounded-full bg-slate-800 border-2 border-green-500 flex items-center justify-center font-bold text-sm text-green-400">
+                RK
+              </div>
+              <span class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-slate-900"></span>
+            </div>
+            <div>
+              <h3 class="font-bold text-sm leading-tight">Ramesh Kumar</h3>
+              <p class="text-[10px] text-slate-400">TRK-102 • EV Freight Truck</p>
+            </div>
+          </div>
+          <div class="text-right">
+            <span class="px-2 py-0.5 bg-green-500/20 text-green-400 rounded-full text-[10px] font-bold">ONLINE</span>
+          </div>
+        </div>
+
+        <!-- APP BODY (SCROLLABLE) -->
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4 bg-slate-950">
+          
+          <!-- QUICK STATUS METRICS -->
+          <div class="grid grid-cols-3 gap-2 text-center">
+            <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Speed</span>
+              <span class="text-base font-bold text-slate-100">55 <span class="text-[10px]">km/h</span></span>
+              <span class="text-[9px] text-green-400 font-semibold block mt-0.5">Eco Zone</span>
+            </div>
+
+            <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Battery</span>
+              <span class="text-base font-bold text-green-400">78%</span>
+              <span class="text-[9px] text-slate-400 block mt-0.5">210 km range</span>
+            </div>
+
+            <div class="bg-slate-900/80 p-2.5 rounded-xl border border-slate-800">
+              <span class="text-[10px] text-slate-400 block">Eco Score</span>
+              <span id="driverScore" class="text-base font-bold text-emerald-400">94/100</span>
+              <span class="text-[9px] text-emerald-400 font-semibold block mt-0.5">Grade A+</span>
+            </div>
+          </div>
+
+          <!-- WEATHER & TRAFFIC LIVE ALERT CARD (EXPLICIT WEATHER FEATURE) -->
+          <div id="driverWeatherCard" class="bg-amber-950/40 border border-amber-500/30 rounded-2xl p-3.5 space-y-2">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center space-x-2">
+                <span class="text-xl">🌧️</span>
+                <div>
+                  <h4 class="text-xs font-bold text-amber-300">Live Weather & Road Alert</h4>
+                  <p class="text-[10px] text-slate-300">Gurgaon Toll • 28°C Heavy Rain</p>
+                </div>
+              </div>
+              <span class="px-2 py-0.5 bg-amber-500/20 text-amber-300 rounded text-[9px] font-bold">WARNING</span>
+            </div>
+
+            <p class="text-[11px] text-slate-300">
+              Heavy rain & traffic slowdown ahead on primary highway. Recommended speed adjusted to <span class="font-bold text-amber-400">45 km/h</span> for optimal battery efficiency and safety.
+            </p>
+          </div>
+
+          <!-- SMART GREEN REROUTE PROPOSAL CARD -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-3 relative overflow-hidden">
+            <div class="flex justify-between items-start">
+              <div>
+                <span class="text-[10px] uppercase font-bold text-green-400 tracking-wider">Smart Reroute Suggestion</span>
+                <h4 class="text-sm font-bold mt-0.5">Switch to Green Bypass (NH-48)</h4>
+              </div>
+              <span class="p-1.5 bg-green-500/10 text-green-400 rounded-lg text-xs">🌱 Eco Route</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2 text-xs bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80">
+              <div>
+                <span class="text-[10px] text-slate-400 block">Carbon Saved</span>
+                <span class="font-bold text-green-400 text-sm">-18% CO₂</span>
+              </div>
+              <div>
+                <span class="text-[10px] text-slate-400 block">Time Saved</span>
+                <span class="font-bold text-emerald-400 text-sm">15 mins faster</span>
+              </div>
+            </div>
+
+            <button id="acceptRouteBtn" onclick="acceptDriverReroute()" class="w-full py-2.5 bg-green-600 hover:bg-green-500 active:bg-green-700 text-white rounded-xl text-xs font-bold transition flex items-center justify-center space-x-2 shadow-lg shadow-green-900/30">
+              <i class="fa-solid fa-route"></i>
+              <span id="routeBtnText">Accept Green Reroute</span>
+            </button>
+          </div>
+
+          <!-- DRIVER FAST ACTIONS -->
+          <div class="grid grid-cols-2 gap-2">
+            <button onclick="askDriverCopilot('Where is the nearest clean EV charging station?')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left flex items-center space-x-2 transition">
+              <i class="fa-solid fa-charging-station text-green-400 text-sm"></i>
+              <div>
+                <span class="text-[11px] font-bold block leading-tight">Find EV Charger</span>
+                <span class="text-[9px] text-slate-400">100% Solar Powered</span>
+              </div>
+            </button>
+
+            <button onclick="askDriverCopilot('Report traffic congestion ahead')" class="p-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-xl text-left flex items-center space-x-2 transition">
+              <i class="fa-solid fa-triangle-exclamation text-amber-400 text-sm"></i>
+              <div>
+                <span class="text-[11px] font-bold block leading-tight">Report Traffic</span>
+                <span class="text-[9px] text-slate-400">One-tap update</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- DRIVER AI COPILOT CHAT BOX -->
+          <div class="bg-slate-900 border border-slate-800 rounded-2xl p-3 flex flex-col h-48">
+            <div class="flex items-center justify-between pb-2 border-b border-slate-800 text-xs">
+              <span class="font-bold text-slate-200 flex items-center">
+                <i class="fa-solid fa-headset text-green-400 mr-1.5"></i> Driver Assistant
+              </span>
+              <span class="text-[9px] text-slate-400">Voice Enabled</span>
+            </div>
+
+            <div id="driverChatHistory" class="flex-1 overflow-y-auto custom-scrollbar my-2 space-y-2 text-[11px] pr-1">
+              <div class="bg-slate-800/80 p-2 rounded-lg text-slate-200">
+                Hi Ramesh! Weather warning active for heavy rain in 5 km. Would you like me to find a green rest stop or activate rain speed mode?
+              </div>
+            </div>
+
+            <div class="flex items-center space-x-1.5 pt-1 border-t border-slate-800">
+              <input id="driverChatInput" type="text" placeholder="Ask assistant..." class="flex-1 bg-slate-950 border border-slate-800 rounded-lg text-[11px] px-2.5 py-1.5 text-slate-100 outline-none focus:border-green-500" onkeypress="if(event.key==='Enter') sendDriverMessage()" />
+              <button onclick="sendDriverMessage()" class="p-1.5 bg-green-600 hover:bg-green-500 text-white rounded-lg text-xs transition">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- PHONE BOTTOM NAV -->
+        <div class="bg-slate-950 border-t border-slate-800 py-2.5 px-6 flex justify-around text-slate-500 text-xs">
+          <button class="text-green-400 flex flex-col items-center">
+            <i class="fa-solid fa-compass"></i>
+            <span class="text-[9px] mt-0.5">Nav</span>
+          </button>
+          <button class="hover:text-slate-300 flex flex-col items-center">
+            <i class="fa-solid fa-bolt"></i>
+            <span class="text-[9px] mt-0.5">Energy</span>
+          </button>
+          <button class="hover:text-slate-300 flex flex-col items-center">
+            <i class="fa-solid fa-user"></i>
+            <span class="text-[9px] mt-0.5">Profile</span>
+          </button>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    // 1. THEME SWITCHER LOGIC
+    const themeToggle = document.getElementById('themeToggle');
+    const themeIcon = document.getElementById('themeIcon');
+    const themeLabel = document.getElementById('themeLabel');
+
+    themeToggle.addEventListener('click', () => {
+      const isDark = document.documentElement.classList.toggle('dark');
+      if (isDark) {
+        themeIcon.className = 'fa-solid fa-sun text-amber-500';
+        themeLabel.textContent = 'Light Mode';
+      } else {
+        themeIcon.className = 'fa-solid fa-moon text-slate-600';
+        themeLabel.textContent = 'Dark Mode';
+      }
+      updateChartColors(isDark);
+    });
+
+    // 2. CHART.JS CONFIGURATION
+    const ctx = document.getElementById('emissionsChart').getContext('2d');
+    let emissionsChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['Standard Diesel Route', 'Optimized Green Route (Current)'],
+        datasets: [{
+          label: 'Emissions (kg CO₂)',
+          data: [180, 142],
+          backgroundColor: ['rgba(239, 68, 68, 0.7)', 'rgba(34, 197, 94, 0.8)'],
+          borderColor: ['rgb(239, 68, 68)', 'rgb(34, 197, 94)'],
+          borderWidth: 1,
+          borderRadius: 6
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { display: false }
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            grid: { color: 'rgba(156, 163, 175, 0.1)' },
+            ticks: { color: '#9ca3af', font: { size: 10 } }
+          },
+          x: {
+            grid: { display: false },
+            ticks: { color: '#9ca3af', font: { size: 10 } }
+          }
+        }
+      }
+    });
+
+    function updateChartColors(isDark) {
+      emissionsChart.options.scales.y.ticks.color = isDark ? '#9ca3af' : '#4b5563';
+      emissionsChart.options.scales.x.ticks.color = isDark ? '#9ca3af' : '#4b5563';
+      emissionsChart.update();
+    }
+
+    // 3. INTERACTIVE CROSS-PORTAL ACTIONS
+    function acceptDriverReroute() {
+      const btn = document.getElementById('acceptRouteBtn');
+      const btnText = document.getElementById('routeBtnText');
+      const ownerCarbon = document.getElementById('ownerCarbonKpi');
+      const ownerCost = document.getElementById('ownerCostKpi');
+      const driverScore = document.getElementById('driverScore');
+
+      // Update button state
+      btn.className = "w-full py-2.5 bg-emerald-600 text-white rounded-xl text-xs font-bold flex items-center justify-center space-x-2 shadow-lg cursor-default";
+      btnText.textContent = "✓ Route Active & Synced";
+
+      // Dynamically update KPIs on both views
+      ownerCarbon.textContent = "128 g/km";
+      ownerCost.textContent = "₹48,200";
+      driverScore.textContent = "98/100";
+
+      // Update Chart
+      emissionsChart.data.datasets[0].data = [180, 128];
+      emissionsChart.update();
+
+      // Add messages in both AI chats
+      appendChatMessage('ownerChatHistory', 'System Alert: Driver Ramesh Kumar accepted the green reroute. Projected emissions reduced by 28.8 kg CO₂.', 'system');
+      appendChatMessage('driverChatHistory', 'Copilot: Dynamic green route locked in! Avoiding heavy rain traffic on main highway.', 'copilot');
+    }
+
+    function runOwnerSimulation() {
+      acceptDriverReroute();
+    }
+
+    // 4. CHAT FUNCTIONS
+    function appendChatMessage(containerId, message, sender) {
+      const container = document.getElementById(containerId);
+      const msgDiv = document.createElement('div');
+      
+      if (sender === 'user') {
+        msgDiv.className = 'bg-green-600 text-white p-2.5 rounded-xl ml-auto max-w-[85%] text-right';
+      } else if (sender === 'system') {
+        msgDiv.className = 'bg-green-500/10 border border-green-500/20 text-green-400 p-2.5 rounded-xl max-w-[90%] font-mono text-[11px]';
+      } else {
+        msgDiv.className = 'bg-slate-100 dark:bg-slate-800/80 p-2.5 rounded-xl text-slate-700 dark:text-slate-300 max-w-[85%]';
+      }
+
+      msgDiv.textContent = message;
+      container.appendChild(msgDiv);
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function sendOwnerMessage() {
+      const input = document.getElementById('ownerChatInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      appendChatMessage('ownerChatHistory', query, 'user');
+      input.value = '';
+
+      setTimeout(() => {
+        let reply = "Analyzing fleet telemetry... Switching TRK-102 to rail intermodal on this corridor will yield a further 34% carbon reduction.";
+        if (query.toLowerCase().includes('weather')) {
+          reply = "Live Weather Radar: Heavy rain on NH-48 near Gurgaon toll. Recommended driver speed lowered to 45 km/h for safety.";
+        } else if (query.toLowerCase().includes('carbon') || query.toLowerCase().includes('highest')) {
+          reply = "TRK-108 (Diesel Heavy) currently has the highest carbon density at 210 g/km. Recommending schedule swap with EV Truck TRK-102.";
+        }
+        appendChatMessage('ownerChatHistory', reply, 'copilot');
+      }, 600);
+    }
+
+    function sendDriverMessage() {
+      const input = document.getElementById('driverChatInput');
+      const query = input.value.trim();
+      if (!query) return;
+
+      appendChatMessage('driverChatHistory', query, 'user');
+      input.value = '';
+
+      setTimeout(() => {
+        let reply = "Safe driving Ramesh! I have monitored the rain radar ahead. NH-48 bypass remains clean and safe.";
+        if (query.toLowerCase().includes('weather') || query.toLowerCase().includes('rain')) {
+          reply = "Rain Alert: 28°C with moderate rainfall near Gurgaon toll. Recommended speed is 45 km/h to maintain full battery efficiency.";
+        } else if (query.toLowerCase().includes('charger') || query.toLowerCase().includes('charging')) {
+          reply = "Nearest Charger: GreenGrid Station 4 km ahead (8 Ultra-fast chargers, 100% solar powered). Reserved slot available.";
+        }
+        appendChatMessage('driverChatHistory', reply, 'copilot');
+      }, 600);
+    }
+
+    function askDriverCopilot(text) {
+      document.getElementById('driverChatInput').value = text;
+      sendDriverMessage();
+    }
+  </script>
+
+</body>
+</html>
